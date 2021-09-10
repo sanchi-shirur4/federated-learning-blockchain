@@ -44,6 +44,7 @@ version.
 > - First terminal ```python server.py```
 > - Second terminal ```python client1.py```
 > - Third terminal ```python client2.py```
+> <img src="https://i.postimg.cc/brZ7tKnM/op1.jpg"/>
 
 ## Distributed Blockchain Model
 
@@ -73,3 +74,4 @@ version.
 > - First terminal ```python server.py```
 > - Second terminal ```python client1.py```
 > - Third terminal ```python client2.py```
+> <img src="https://i.postimg.cc/t4g9qmSK/op2.jpg"/>
