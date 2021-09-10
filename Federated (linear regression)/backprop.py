@@ -1,4 +1,6 @@
 import numpy as np
+# from tqdm._tqdm_notebook import tqdm_notebook as tqdm
+# tqdm().pandas()
 
 class Layer():
         
@@ -38,6 +40,9 @@ class Layer():
         self.W = np.random.randn(self.output_dims, self.input_dims)*np.sqrt(2)/np.sqrt(self.input_dims)
         
         # Xavier Weight Initialization
+        # B = np.sqrt(6)/np.sqrt(self.input_dims + self.output_dims)
+        # self.W = np.random.uniform(low=-B , high=B ,size=(self.output_dims, self.input_dims))
+        
         self.b = np.zeros(shape=(self.output_dims, 1))
       
     
@@ -83,6 +88,10 @@ class NeuralNetwork():
         # Create Layers
         self.layers = self.create_layers(architecture, input_size)
         
+        # Data
+        # self.data = train_data
+        # self.labels = train_labels
+        
         # Cost Function
         self.J, self.d_J = cost_functions[cost_function]
         
@@ -104,6 +113,7 @@ class NeuralNetwork():
         y_hat = self.layers[-1].a
         
         if error_func == "MSE":
+            # return np.sqrt(np.sum(y_hat-self.labels))/self.labels.shape[1]
             return np.sum((self.labels - y_hat)**2 ).squeeze() / (y_hat.shape[1]*2)
         elif error_func == "MAE":
             return np.sum(np.abs(y_hat-self.labels))/self.labels.shape[1]
@@ -156,7 +166,9 @@ class NeuralNetwork():
         for i in range(epochs):
             self.forward_pass()
             cost = self.calc_J(self.layers[-1].a)
-            history.append(cost)     
+            history.append(cost)
+            # if i % 50 == 0:
+            #     print ("Cost after iteration %i: %f" %(i, cost))        
             self.backward_pass()
             self.learn()
         
@@ -215,3 +227,45 @@ def d_tanh(x):
 
 
 activation_functions = {"sigmoid" : (sigmoid, d_sigmoid) , "relu" : (relu, d_relu), "tanh" : (tanh, d_tanh)}
+
+"""# Application on Cancer Dataset"""
+
+# import matplotlib.pyplot as plt
+# from sklearn.model_selection import train_test_split
+# from sklearn.datasets import load_breast_cancer
+
+# X, y = load_breast_cancer(return_X_y=True)
+# y = y.reshape((len(y), 1))
+
+# # Split Data
+# train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.2)
+# train_X = train_X.T
+# test_X = test_X.T
+
+# # Normalize
+# mean = np.mean(train_X, axis = 1, keepdims=True)
+# std_dev = np.std(train_X, axis = 1, keepdims=True)
+# train_X = (train_X - mean)/std_dev
+# test_X = (test_X - mean)/std_dev
+
+# train_y = train_y.T
+# test_y = test_y.T
+
+# train_X.shape, train_y.shape, test_X.shape, test_y.shape
+
+# description = [{"num_nodes" : 100, "activation" : "relu"},
+#                {"num_nodes" : 50, "activation" : "relu"},
+#                {"num_nodes" : 1, "activation" : "sigmoid"}]
+
+# model = NeuralNetwork(description,30,"cross_entropy_sigmoid", train_X, train_y, learning_rate=0.001)
+
+# history = model.train(1000)
+
+# plt.plot(history)
+
+# acc = model.calc_accuracy(train_X, train_y)
+# print("Accuracy of the model on the training set is = {}".format(acc))
+
+# acc = model.calc_accuracy(test_X, test_y)
+# print("Accuracy of the model on the test set is = {}".format(acc))
+

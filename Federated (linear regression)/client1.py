@@ -9,7 +9,9 @@ import pandas
 import math
 import backprop as bp
 
+
 # Data Input
+
 df = pandas.read_csv('data.csv')
 
 data = df[:int(len(df)/2)]
@@ -22,6 +24,7 @@ y = y.reshape((len(y), 1))
 
 # Preparing the NumPy array of the inputs.
 data_inputs = numpy.array(X)
+# print("Shape of input",data_inputs.shape)
 
 # Preparing the NumPy array of the outputs.
 data_outputs = numpy.array(y)
@@ -29,7 +32,6 @@ data_outputs = numpy.array(y)
 data_inputs = data_inputs.T
 data_outputs = data_outputs.T
 
-# Normalizing data
 mean = numpy.mean(data_inputs, axis = 1, keepdims=True)
 std_dev = numpy.std(data_inputs, axis = 1, keepdims=True)
 data_inputs = (data_inputs - mean)/std_dev
@@ -49,6 +51,7 @@ def recv(soc, buffer_size=1024, recv_timeout=10):
             print("An error occurred while receiving data from the server {msg}.".format(msg=e))
 
     try:
+        # print(str(received_data)[-18:-7])
         print("All data ({data_len} bytes).".format(data_len=len(received_data)))
         received_data = pickle.loads(received_data)
     except BaseException as e:
@@ -75,7 +78,11 @@ while True:
     data = {"subject": subject, "data": NN_model, "mark":"-----------"}
     data_byte = pickle.dumps(data)
     print("data sent to server {}".format(len(data_byte)))
-
+    
+    # for checking logs
+    # f = open("logs.cli","a")
+    # f.write(str(data_byte))
+    # f.close()
     print("Sending the Model to the Server.\n")
     soc.sendall(data_byte)
     
@@ -92,6 +99,13 @@ while True:
     subject = received_data["subject"]
     if subject == "model":
         NN_model = received_data["data"]
+        # print(NN_model)
+        # f = open("model_logs", "a")
+        # f.write(str(NN_model.tolist()))
+        # f.write("-------------------")
+        # f.close()
+        # print("Architecture of the model {}".format(NN_model.architecture))
+        # print("Cost function the model {}".format(NN_model.cost_function))
     elif subject == "done":
         print("Model is trained.")
         break
@@ -99,17 +113,21 @@ while True:
         print("Unrecognized message type.")
         break
 
-    # Data from Clients override
+    # ga_instance = prepare_GA(GANN_instance)
+
     NN_model.data = data_inputs
     NN_model.labels = data_outputs
 
-    # Training the data
     history = NN_model.train(1000)
+    # print(history)
     prediction = NN_model.layers[-1].a
     error = NN_model.calc_accuracy(data_inputs, data_outputs, "RMSE")
 
-    print("Predictions from model {predictions}".format(predictions = prediction))
+    # print("Predictions from model {predictions}".format(predictions = prediction))
     print("Error from model(RMSE) {error}".format(error = error))    
+    # ga_instance.run()
+
+    # ga_instance.plot_result()s
 
     subject = "model"
 
